@@ -13,7 +13,7 @@ int main ()
 	srand(time(NULL));
 	for (i=0; i<tam; i++) 
 		vector[i]=rand()%100;
-	resultado=suma(vector,tam,8);
+	resultado=suma(vector,tam,5);
 	printf("El resultado es %f",resultado);
 }
 void sumaparcial(double *a, int n){
