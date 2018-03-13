@@ -18,6 +18,8 @@ int main (){
 	{
 		//Asignación estática de iteraciones en la que el 
 		//tamaño del bloque se fija a chunk
+		//el ejemploForBase es igual pero sin nowait
+		
 		#pragma omp for schedule (static, chunk) nowait
 		for (i=0;i<N;i++){
 			//Get ID of thread
