@@ -6,7 +6,7 @@
 int main(int argc, char* argv[]){
 
 	//Variables de mi programa
-	int size, rank, i, from, to, ndat, part, tag, VA[N], dataSize;
+	int size, rank, i, from, to, ndat, part, tag, VA[N], dataSize, sumaParcial, resultado;
 	MPI_Status info;
 
 	
@@ -16,6 +16,8 @@ int main(int argc, char* argv[]){
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
 	//Calculo qué proceso soy
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+	sumaParcial = 0;
+	resultado = 0;	
 	//Inicializo vector a 0
 	for (i=0; i<N; i++) {
 		VA[i] = 0;
@@ -40,9 +42,12 @@ int main(int argc, char* argv[]){
 	//Dividimos el vector en partes, y las distribuimos entre los procesos 
  	MPI_Scatter(&VA[0], dataSize, MPI_INT, &VA[0], dataSize, MPI_INT, 0, MPI_COMM_WORLD);	
 	//Cada proceso multiplica por 2 su parte del vector
-	
+	MPI_Barrier(MPI_COMM_WORLD);	
+
 	for(i = 0; i < dataSize; i++){
 		VA[i] = VA[i]*2;
+		sumaParcial += VA[i]; 
+
 	}
 	printf("Proceso %d: VA después de recibir los datos y multiplicarlos por 2: \n", rank);
 	//Cada proceso imprime su parte del vector
@@ -52,13 +57,13 @@ int main(int argc, char* argv[]){
 	printf("\n\n");
 	//Uso gather para recolectar los valores nuevos en un nuevo vector
 
-	MPI_Reduce(&VA[0], &VA[0], dataSize, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+	MPI_Reduce(&sumaParcial, &resultado, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 	//El maestro imprime el vector final
 	if (rank == 0){
 		printf("Proceso %d: VA después de recibir los datos: \n", rank);
-		for (i=0; i<N; i++) {
-			printf("%d  ",VA[i]);
-		}	
+		//for (i=0; i<N; i++) {
+			printf("%d  ",resultado);
+		//}	
 	}		
 	//Cierro MPI
 	MPI_Finalize();
